@@ -1,5 +1,5 @@
 # Metacontam v0.0.1
-<img width="434" height="144" alt="Metacontam" src="https://github.com/user-attachments/assets/273b5685-b46d-4c9d-ab2e-929d73d7dfec" />
+<img width="434" height="144" alt="Metacontam" src="Metacontam_image.png" />
 
 **Metacontam** is a contaminant detection tool for shotgun metagenomic sequencing data.  
 Metacontam identifies contaminant species using a blacklist-guided Louvain algorithm and conANI comparison. It is best suited for low-biomass metagenomic samples.
