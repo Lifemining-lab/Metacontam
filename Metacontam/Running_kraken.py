@@ -9,7 +9,7 @@ def running_kraken(metadata, db, outputdir, core):
                 "kraken2",
                 "--threads", str(core),
                 "--db", db,
-                "--memory-mapping",
+#                "--memory-mapping",
                 "--paired",
                 sample1,sample2,
                 "--report", os.path.join(outputdir, "Kraken_dir", f'{sample_name}.report'),
