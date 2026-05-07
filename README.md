@@ -50,6 +50,8 @@ pip install instrain
 
 > **Note**: inStrain must be installed separately via pip due to a dependency conflict.
 
+<br>
+
 ---
 
 ### Option 2 — Install with mamba
@@ -76,6 +78,8 @@ pip install .
 ```bash
 metacontam --help
 ```
+
+<br>
 
 ---
 
