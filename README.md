@@ -41,9 +41,20 @@ bracken-build -d /path/to/kraken2_db -t 16 -k 35 -l <READ_LENGTH>
 
 ## Installation
 
-### Option 1 — Install with mamba (recommended)
+### Option 1 — Install with conda (recommended)
 
-> Fastest way to get started right now — all external tools and Python dependencies are installed automatically via a single environment file.
+```bash
+conda install -c bioconda -c conda-forge metacontam
+pip install instrain
+```
+
+> **Note**: inStrain must be installed separately via pip due to a dependency conflict.
+
+---
+
+### Option 2 — Install with mamba
+
+> All external tools and Python dependencies are installed automatically via a single environment file.
 
 **Step 1. Install Miniforge (skip if mamba is already installed)**
 ```bash
@@ -65,17 +76,6 @@ pip install .
 ```bash
 metacontam --help
 ```
-
----
-
-### Option 2 — Install with conda
-
-```bash
-conda install -c bioconda -c conda-forge metacontam
-pip install instrain
-```
-
-> **Note**: inStrain must be installed separately via pip due to a dependency conflict.
 
 ---
 
