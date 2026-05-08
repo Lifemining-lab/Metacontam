@@ -1,10 +1,10 @@
 # Metacontam v0.0.1
-<img width="434" height="144" alt="Metacontam" src="Metacontam_image.png" />
-
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/metacontam/README.html)
 
 **Metacontam** is a contaminant detection tool for shotgun metagenomic sequencing data.  
 Metacontam identifies contaminant species using a blacklist-guided Louvain algorithm and conANI comparison. It is best suited for low-biomass metagenomic samples.
+
+<img width="434" height="144" alt="Metacontam" src="Metacontam_image.png" />
 
 ---
 
