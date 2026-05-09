@@ -37,7 +37,7 @@ tar -xf kraken2_standard_db_Aug2023.tar
 
 ---
 
-### Option B — Build your own database
+### Option B — Build the latest database yourself
 
 ```bash
 # Build standard Kraken2 DB (bacteria + archaea + viral + human + plasmid + UniVec_Core)
