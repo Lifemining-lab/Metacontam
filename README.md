@@ -20,6 +20,35 @@ Kraken2 → Bracken → Count Matrix → Prevalence Threshold
 
 ---
 
+## The blacklist
+
+Metacontam ships with a **blacklist** of 1,782 species-level NCBI taxids
+(`Metacontam/species_under_blacklist.pkl`), compiled from published surveys of
+reagent and laboratory contaminants. It is a fixed resource built independently
+of any dataset analysed here, so it is not tuned to the benchmark.
+
+**The blacklist is a prior, not a filter.** Metacontam never removes a species
+just because it is on the list, and never keeps one just because it is absent.
+A blacklisted species that behaves like a genuine community member is retained,
+and a species absent from the list is called a contaminant whenever the network
+and ANI evidence say so. That is the point of the method: the blacklist only
+tells the algorithm *where to start looking*.
+
+It enters the pipeline in three places:
+
+| Stage | How the blacklist is used |
+|---|---|
+| **Prevalence threshold** | The adaptive cutoff starts from `median_black`, the median prevalence of the (up to) 100 most prevalent blacklisted taxa present in the data, then shifts by `0.7 × median_corr × 10 / sqrt(n)`. Contaminants are prevalent across samples, so the blacklist supplies a data-driven anchor instead of an arbitrary constant. |
+| **Community seeding** | Blacklisted taxa that survive the filter become **seeds** for the seeded Louvain step. Among the detected communities, Metacontam selects the one containing the seeds; every other member of that community is a contaminant *candidate*, whether or not it is blacklisted. This is how species missing from the list are recovered. |
+| **ANI cutoff** | The conANI percentile is adjusted as `effective_percentile = 0.6 − 0.6 × bl_ratio`, where `bl_ratio` is the fraction of ANI-evaluable candidates that are blacklisted. A candidate community dominated by known contaminants relaxes the cutoff; one with few known contaminants keeps it strict. |
+
+If no blacklisted taxon survives the prevalence filter, the adaptive threshold
+cannot be defined and the run stops with an explicit message rather than looping.
+This usually means the classifier database uses a different taxonomy; use
+`--filtered-matrix` to supply a taxon set directly and skip the adaptive filter.
+
+---
+
 ## Kraken2 database requirement
 
 Metacontam requires a Kraken2 database that includes raw `library.fna` files (needed for genome retrieval) and has `bracken-build` applied before use.
@@ -153,13 +182,35 @@ metacontam \
 ```
 
 ### Metadata format (`metadata.tsv`)
-Tab-separated, no header:
+
+This is the only input file you write yourself. It lists the samples to analyse
+and where their reads live. **Tab-separated, four columns, no header row:**
+
+| # | Column | Description |
+|---|--------|-------------|
+| 1 | Sample name | Identifier used for every output file of that sample. Must be unique. Avoid whitespace; `_` is used internally to split the sample ID from the rest of a filename, so a name without `_` is safest. |
+| 2 | Sample type | Group label (e.g. body site, batch). **Reserved for future batch-aware decontamination and unused by the current pipeline** — any placeholder such as `sample` is accepted. |
+| 3 | R1 path | Forward reads, FASTQ (`.fastq` or `.fastq.gz`). Absolute paths are safest. |
+| 4 | R2 path | Reverse reads. Paired-end data is required. |
+
 ```
-Samplename_A    sampletype_1    /path/to/SampleA_R1.fastq.gz    /path/to/SampleA_R2.fastq.gz
-Samplename_B    sampletype_2    /path/to/SampleB_R1.fastq.gz    /path/to/SampleB_R2.fastq.gz
+SRR1000001	skin	/data/SRR1000001_R1.fastq.gz	/data/SRR1000001_R2.fastq.gz
+SRR1000002	skin	/data/SRR1000002_R1.fastq.gz	/data/SRR1000002_R2.fastq.gz
+SRR1000003	nasal	/data/SRR1000003_R1.fastq.gz	/data/SRR1000003_R2.fastq.gz
 ```
 
-> **Note**: The sample type column is reserved for future batch-aware decontamination and is **not used by the current pipeline**. Any placeholder value (e.g., `sample`) is accepted.
+> Separate the columns with **tab characters, not spaces**. A spreadsheet export
+> saved as "Tab delimited text" works; a CSV does not.
+
+**How many samples do I need?** Metacontam infers contamination from
+co-occurrence across samples, so it needs enough samples for the correlation
+network to be meaningful. The datasets in the paper range from 20 to 344
+samples. Below roughly 10 samples the network stage becomes unreliable; the
+BH-FDR on the edges (`--fdr-alpha`, on by default) is there to keep the edge set
+honest at small *n*.
+
+> **Note**: No negative controls are required. Metacontam is designed for
+> datasets where blanks were never sequenced.
 
 ---
 
