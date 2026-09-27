@@ -22,30 +22,12 @@ Kraken2 → Bracken → Count Matrix → Prevalence Threshold
 
 ## The blacklist
 
-Metacontam ships with a **blacklist** of 1,782 species-level NCBI taxids
-(`Metacontam/species_under_blacklist.pkl`), compiled from published surveys of
-reagent and laboratory contaminants. It is a fixed resource built independently
-of any dataset analysed here, so it is not tuned to the benchmark.
-
-**The blacklist is a prior, not a filter.** Metacontam never removes a species
-just because it is on the list, and never keeps one just because it is absent.
-A blacklisted species that behaves like a genuine community member is retained,
-and a species absent from the list is called a contaminant whenever the network
-and ANI evidence say so. That is the point of the method: the blacklist only
-tells the algorithm *where to start looking*.
-
-It enters the pipeline in three places:
-
-| Stage | How the blacklist is used |
-|---|---|
-| **Prevalence threshold** | The adaptive cutoff starts from `median_black`, the median prevalence of the (up to) 100 most prevalent blacklisted taxa present in the data, then shifts by `0.7 × median_corr × 10 / sqrt(n)`. Contaminants are prevalent across samples, so the blacklist supplies a data-driven anchor instead of an arbitrary constant. |
-| **Community seeding** | Blacklisted taxa that survive the filter become **seeds** for the seeded Louvain step. Among the detected communities, Metacontam selects the one containing the seeds; every other member of that community is a contaminant *candidate*, whether or not it is blacklisted. This is how species missing from the list are recovered. |
-| **ANI cutoff** | The conANI percentile is adjusted as `effective_percentile = 0.6 − 0.6 × bl_ratio`, where `bl_ratio` is the fraction of ANI-evaluable candidates that are blacklisted. A candidate community dominated by known contaminants relaxes the cutoff; one with few known contaminants keeps it strict. |
-
-If no blacklisted taxon survives the prevalence filter, the adaptive threshold
-cannot be defined and the run stops with an explicit message rather than looping.
-This usually means the classifier database uses a different taxonomy; use
-`--filtered-matrix` to supply a taxon set directly and skip the adaptive filter.
+Metacontam is seeded with a fixed list of 1,782 species-level taxids known to be
+reagent or laboratory contaminants — it marks where to start looking, not what to
+remove. Full list with names:
+[`Metacontam/species_under_blacklist.tsv`](Metacontam/species_under_blacklist.tsv)
+(`taxid`, `scientific_name`; the pipeline loads the same set from
+`species_under_blacklist.pkl`).
 
 ---
 
