@@ -1,4 +1,4 @@
-# Metacontam v0.0.2
+# Metacontam v0.0.3
 [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/metacontam/README.html)
 
 **Metacontam** is a contaminant detection tool for shotgun metagenomic sequencing data.  
